@@ -105,7 +105,16 @@
 	    "h v" '(describe-variable :wk "Describe variable")
 	    "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :wk "Reload emacs config")
 	    ;; "h r r" '(reload-init-file :wk "Reload emacs config")
+
+	    "t" '(:ignore t :wk "Toggle")
+	    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+	    "t t" '(visual-line-mode :wk "Toggle truncated lines")
 	  )))
+
+(defun reload-init-file () ;; 'defun' == 'def' in python
+  (interactive) ;; Makes function available using 'M-x' which is 'Alt-x'
+  (load-file user-init-file)
+  (load-file user-init-file))
 
 (set-face-attribute 'default nil
                     :font "JetBrains Mono"
