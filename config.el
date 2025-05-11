@@ -116,27 +116,41 @@
   (load-file user-init-file)
   (load-file user-init-file))
 
-(set-face-attribute 'default nil
-                    :font "JetBrains Mono"
-                    :height 110
-                    :weight 'medium)
+;; (elpaca nerd-icons)
+  ;; (use-package nerd-icons
+  ;;   :ensure t)
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p))
 
-(set-face-attribute 'variable-pitch nil
-                    :font "JetBrains Mono"
-                    :height 120
-                    :weight 'medium)
+;; (use-package all-the-icons-dired
+  ;; :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+      ;; run M-x nerd-icons-install-fonts to install nerd fonts
+        (set-face-attribute 'default nil
+                            :font "JetBrains Mono"
+                            :height 110
+                            :weight 'medium)
 
-(set-face-attribute 'fixed-pitch nil
-                    :font "JetBrains Mono"
-                    :height 110
-                    :weight 'medium)
+        (set-face-attribute 'variable-pitch nil
+                            :font "JetBrains Mono"
+                            :height 120
+                            :weight 'medium)
 
-(set-face-attribute 'font-lock-comment-face nil :slant 'italic)
-(set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
+        (set-face-attribute 'fixed-pitch nil
+                            :font "JetBrains Mono"
+                            :height 110
+                            :weight 'medium)
 
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+        (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+        (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
 
-(setq-default line-spacing 0.12)
+        (add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+
+        (setq-default line-spacing 0.12)
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
 (use-package dashboard
   :ensure t 
@@ -158,7 +172,8 @@
   :config
   (dashboard-setup-startup-hook))
 
-(use-package doom-themes
+;; (invert-face 'default)
+ (use-package doom-themes
   :ensure t
   :config
   ;; Global settings (defaults)
@@ -175,7 +190,6 @@
   (doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-  ;; (invert-face 'default)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -193,6 +207,10 @@
 (use-package org-bullets
   :ensure t
   :hook (org-mode . org-bullets-mode))
+
+(electric-indent-mode -1)
+
+(require 'org-tempo)
 
 (use-package which-key
   :init (which-key-mode 1)
