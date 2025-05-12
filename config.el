@@ -1,44 +1,47 @@
-(defvar elpaca-installer-version 0.11)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order
-  '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-           :ref nil :depth 1 :inherit ignore
-           :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-           :build (:not elpaca--activate-package)))
+(setq frame-resize-pixelwise t)
+  
 
-(let* ((repo (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (<= emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                  ,@(when-let* ((depth (plist-get order :depth)))
-                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                  ,(plist-get order :repo) ,repo))))
-                  ((zerop (call-process "git" nil buffer t "checkout"
-                                        (or (plist-get order :ref) "--"))))
-                  (emacs (concat invocation-directory invocation-name))
-                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                  ((require 'elpaca))
-                  ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive)))))
-(unless (require 'elpaca-autoloads nil t)
-  (require 'elpaca)
-  (elpaca-generate-autoloads "elpaca" repo)
-  (let ((load-source-file-function nil)) (load "./elpaca-autoloads")))
+  (defvar elpaca-installer-version 0.11)
+  (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+  (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+  (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+  (defvar elpaca-order
+    '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+             :ref nil :depth 1 :inherit ignore
+             :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+             :build (:not elpaca--activate-package)))
 
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+  (let* ((repo (expand-file-name "elpaca/" elpaca-repos-directory))
+         (build (expand-file-name "elpaca/" elpaca-builds-directory))
+         (order (cdr elpaca-order))
+         (default-directory repo))
+    (add-to-list 'load-path (if (file-exists-p build) build repo))
+    (unless (file-exists-p repo)
+      (make-directory repo t)
+      (when (<= emacs-major-version 28) (require 'subr-x))
+      (condition-case-unless-debug err
+          (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                    ,@(when-let* ((depth (plist-get order :depth)))
+                                                        (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                    ,(plist-get order :repo) ,repo))))
+                    ((zerop (call-process "git" nil buffer t "checkout"
+                                          (or (plist-get order :ref) "--"))))
+                    (emacs (concat invocation-directory invocation-name))
+                    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                          "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                    ((require 'elpaca))
+                    ((elpaca-generate-autoloads "elpaca" repo)))
+              (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+            (error "%s" (with-current-buffer buffer (buffer-string))))
+        ((error) (warn "%s" err) (delete-directory repo 'recursive)))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads")))
+
+  (add-hook 'after-init-hook #'elpaca-process-queues)
+  (elpaca `(,@elpaca-order))
 
 (elpaca elpaca-use-package
   (elpaca-use-package-mode))
@@ -81,12 +84,12 @@
       :global-prefix "M-SPC")
 
   (solomon/leader-keys
+            "SPC" '(counsel-M-x :wk "Counsel M-x") ;; Same as Meta-X (Alt-X)
+
 	    "." '(find-file :wk "Find file")
 	    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
 	    "g c c" '(comment-line :wk "Comment lines")
-	    
 	    "f r" '(counsel-recentf :wk "Find recent files")
-
             "pc" '(clipboard-yank :wk "Paste Clipboard")
 
 	    "b" '(:ignore t :wk "buffer")
@@ -97,28 +100,181 @@
 	    "b p" '(previous-buffer :wk "Previous buffer")
 	    "b r" '(revert-buffer :wk "Reload buffer")
 
-	    "e" '(:ignore t :wk "evaluate")
+	    "e" '(:ignore t :wk "evaluate/eshell")
 	    "e b" '(eval-buffer :wk "Eval buffer")
 	    "e d" '(eval-defun :wk "Eval defun")
 	    "e e" '(eval-expression :wk "Eval expression")
+	    
 	    "e l" '(eval-last-sexp :wk "Eval last sexp")
 	    "e r" '(eval-region :wk "Eval region")
+	   "e s" '(eshell :which-key "Eshell") 
+
+	   "a" '(:ignore t :wk "App")
+	   "a l a" '(counsel-linux-app :wk "App launcher")
 
 	    "h" '(:ignore t :wk "Help")
 	    "h f" '(describe-function :wk "Describe function")
 	    "h v" '(describe-variable :wk "Describe variable")
-	    "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :wk "Reload emacs config")
-	    ;; "h r r" '(reload-init-file :wk "Reload emacs config")
+	    ;; "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :wk "Reload emacs config")
+	    "h r r" '(reload-init-file :wk "Reload emacs config")
+
+		"m" '(:ignore t :wk "Org")
+		"m a" '(org-agenda :wk "Org agenda")
+		"m e" '(org-export-dispatch :wk "Org export dispatch")
+		"m i" '(org-toggle-item :wk "Org toggle item")
+		"m t" '(org-todo :wk "Org todo")
+		"m B" '(org-babel-tangle :wk "Org babel tangle")
+		"m T" '(org-todo-list :wk "Org todo list")
+
+		    "m b" '(:ignore t :wk "Tables")
+		    "m b -" '(org-table-insert-hline :wk "Insert hline in table")
+
+		"m d" '(:ignore t :wk "Date/deadline")
+		"m d t" '(org-time-stamp :wk "Org time stamp")
 
 	    "t" '(:ignore t :wk "Toggle")
 	    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
 	    "t t" '(visual-line-mode :wk "Toggle truncated lines")
+	    
+	   "t v" '(vterm-toggle :wk "Toggle vterm") 
+	    
+		"w" '(:ignore t :wk "Windows")
+		;; Window splits
+		"w c" '(evil-window-delete :wk "Close window")
+		"w n" '(evil-window-new :wk "New window")
+		"w s" '(evil-window-split :wk "Horizontal split window")
+		"w v" '(evil-window-vsplit :wk "Vertical split window")
+		;; Window motions
+		"w h" '(evil-window-left :wk "Window left")
+		"w j" '(evil-window-down :wk "Window down")
+		"w k" '(evil-window-up :wk "Window up")
+		"w l" '(evil-window-right :wk "Window right")
+		"w w" '(evil-window-next :wk "Goto next window")
+		;; Move Windows
+		"w H" '(buf-move-left :wk "Buffer move left")
+		"w J" '(buf-move-down :wk "Buffer move down")
+		"w K" '(buf-move-up :wk "Buffer move up")
+		"w L" '(buf-move-right :wk "Buffer move right")
 	  )))
+
+(require 'windmove)
+
+;;;###autoload
+(defun buf-move-up ()
+  "Swap the current buffer and the buffer above the split.
+If there is no split, ie now window above the current one, an
+error is signaled."
+;;  "Switches between the current buffer, and the buffer above the
+;;  split, if possible."
+  (interactive)
+  (let* ((other-win (windmove-find-other-window 'up))
+	 (buf-this-buf (window-buffer (selected-window))))
+    (if (null other-win)
+        (error "No window above this one")
+      ;; swap top with this one
+      (set-window-buffer (selected-window) (window-buffer other-win))
+      ;; move this one to top
+      (set-window-buffer other-win buf-this-buf)
+      (select-window other-win))))
+
+;;;###autoload
+(defun buf-move-down ()
+"Swap the current buffer and the buffer under the split.
+If there is no split, ie now window under the current one, an
+error is signaled."
+  (interactive)
+  (let* ((other-win (windmove-find-other-window 'down))
+	 (buf-this-buf (window-buffer (selected-window))))
+    (if (or (null other-win) 
+            (string-match "^ \\*Minibuf" (buffer-name (window-buffer other-win))))
+        (error "No window under this one")
+      ;; swap top with this one
+      (set-window-buffer (selected-window) (window-buffer other-win))
+      ;; move this one to top
+      (set-window-buffer other-win buf-this-buf)
+      (select-window other-win))))
+
+;;;###autoload
+(defun buf-move-left ()
+"Swap the current buffer and the buffer on the left of the split.
+If there is no split, ie now window on the left of the current
+one, an error is signaled."
+  (interactive)
+  (let* ((other-win (windmove-find-other-window 'left))
+	 (buf-this-buf (window-buffer (selected-window))))
+    (if (null other-win)
+        (error "No left split")
+      ;; swap top with this one
+      (set-window-buffer (selected-window) (window-buffer other-win))
+      ;; move this one to top
+      (set-window-buffer other-win buf-this-buf)
+      (select-window other-win))))
+
+;;;###autoload
+(defun buf-move-right ()
+"Swap the current buffer and the buffer on the right of the split.
+If there is no split, ie now window on the right of the current
+one, an error is signaled."
+  (interactive)
+  (let* ((other-win (windmove-find-other-window 'right))
+	 (buf-this-buf (window-buffer (selected-window))))
+    (if (null other-win)
+        (error "No right split")
+      ;; swap top with this one
+      (set-window-buffer (selected-window) (window-buffer other-win))
+      ;; move this one to top
+      (set-window-buffer other-win buf-this-buf)
+      (select-window other-win))))
 
 (defun reload-init-file () ;; 'defun' == 'def' in python
   (interactive) ;; Makes function available using 'M-x' which is 'Alt-x'
   (load-file user-init-file)
   (load-file user-init-file))
+
+(elpaca eshell-syntax-highlighting
+(use-package eshell-syntax-highlighting
+  :after esh-mode
+  :config
+  (eshell-syntax-highlighting-global-mode +1))
+
+;; eshell-syntax-highlighting -- adds fish/zsh-like syntax highlighting.
+;; eshell-rc-script -- your profile for eshell; like a bashrc for eshell.
+;; eshell-aliases-file -- sets an aliases file for the eshell.
+  
+(setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
+      eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
+      eshell-history-size 5000
+      eshell-buffer-maximum-lines 5000
+      eshell-hist-ignoredups t
+      eshell-scroll-to-bottom-on-input t
+      eshell-destroy-buffer-when-process-dies t
+      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh")))
+
+(elpaca vterm
+(use-package vterm
+:config
+(setq shell-file-name "/bin/bash"
+      vterm-max-scrollback 5000)))
+
+(elpaca vterm-toggle
+(use-package vterm-toggle
+  :after vterm
+  :config
+  (setq vterm-toggle-fullscreen-p nil)
+  (setq vterm-toggle-scope 'project)
+  (add-to-list 'display-buffer-alist
+               '((lambda (buffer-or-name _)
+                     (let ((buffer (get-buffer buffer-or-name)))
+                       (with-current-buffer buffer
+                         (or (equal major-mode 'vterm-mode)
+                             (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+                  (display-buffer-reuse-window display-buffer-at-bottom)
+                  ;;(display-buffer-reuse-window display-buffer-in-direction)
+                  ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+                  ;;(direction . bottom)
+                  ;;(dedicated . t) ;dedicated is supported in emacs27
+                  (reusable-frames . visible)
+                  (window-height . 0.3)))))
 
 (set-face-attribute 'default nil
                     :font "JetBrains Mono"
@@ -278,5 +434,43 @@
         which-key-idle-delay 0.1
         which-key-side-window-max-height 0.25
         which-key-max-description-length 25
-        which-key-allow-imprecise-window-fit t
+        which-key-allow-imprecise-window-fit nil
         which-key-separator " → "))
+
+(use-package app-launcher
+    :ensure '(app-launcher :host github :repo "SebastienWae/app-launcher"))
+;; create a global keyboard shortcut with the following code
+;; emacsclient -cF "((visibility . nil))" -e "(emacs-run-launcher)"
+
+(defun emacs-run-launcher ()
+  "Create and select a frame called emacs-run-launcher which consists only of a minibuffer and has specific dimensions. Runs app-launcher-run-app on that frame, which is an emacs command that prompts you to select an app and open it in a dmenu like behaviour. Delete the frame after that command has exited"
+  (interactive)
+  (with-selected-frame 
+    (make-frame '((name . "emacs-run-launcher")
+                  (minibuffer . only)
+                  (fullscreen . 0) ; no fullscreen
+                  (undecorated . t) ; remove title bar
+                  ;;(auto-raise . t) ; focus on this frame
+                  ;;(tool-bar-lines . 0)
+                  ;;(menu-bar-lines . 0)
+                  (internal-border-width . 10)
+                  (width . 80)
+                  (height . 11)))
+                  (unwind-protect
+                    (app-launcher-run-app)
+                    (delete-frame))))
+
+(elpaca projectile
+(use-package projectile
+  :config
+  (projectile-mode 1))
+)
+
+(elpaca haskell-mode
+  (use-package haskell-mode))
+
+(elpaca python-mode
+(use-package python-mode))  
+
+  (elpaca lua-mode
+  (use-package lua-mode))
