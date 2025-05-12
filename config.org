@@ -11,7 +11,7 @@
 - [[#reload-emacs][RELOAD EMACS]]
 - [[#fonts][FONTS]]
   - [[#setting-font-face][Setting Font Face]]
-  - [[#nerd-icons][NERD ICONS]]
+  - [[#all-the-icons][ALL-THE-ICONS]]
   - [[#zooming-inout][ZOOMING IN/OUT]]
 - [[#gui-adjustments][GUI ADJUSTMENTS]]
   - [[#modeline][Modeline]]
@@ -19,6 +19,7 @@
   - [[#dark-theme][Dark Theme]]
   - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars, and Scrollbars]]
   - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
+- [[#ivy-counsel][IVY (COUNSEL)]]
 - [[#org-mode][ORG MODE]]
   - [[#enabling-table-of-contents][Enabling Table of Contents]]
   - [[#enabling-org-bullets][Enabling Org Bullets]]
@@ -122,6 +123,8 @@
   	    "." '(find-file :wk "Find file")
   	    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
   	    "g c c" '(comment-line :wk "Comment lines")
+  	    
+  	    "f r" '(counsel-recentf :wk "Find recent files")
 
               "pc" '(clipboard-yank :wk "Paste Clipboard")
 
@@ -187,7 +190,7 @@ A custom Emacs function to reload init.el
           (setq-default line-spacing 0.12)
 #+end_src
 
-** NERD ICONS
+** ALL-THE-ICONS
 #+begin_src emacs-lisp
   (use-package all-the-icons
     :ensure t
@@ -280,6 +283,43 @@ A custom Emacs function to reload init.el
 (global-visual-line-mode t)
 #+end_src
 
+* IVY (COUNSEL)
+A generic completion mechanism for Emacs
+#+begin_src emacs-lisp
+(elpaca counsel
+(use-package counsel
+  :after ivy
+  :config (counsel-mode)))
+
+(use-package ivy
+  :bind
+  ;; ivy-resume resumes the last Ivy-based completion.
+  (("C-c C-r" . ivy-resume)
+   ("C-x B" . ivy-switch-buffer-other-window))
+  :custom
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq enable-recursive-minibuffers t)
+  :config
+  (ivy-mode))
+
+(use-package all-the-icons-ivy-rich
+  :ensure t
+  :init (all-the-icons-ivy-rich-mode 1))
+
+(use-package ivy-rich
+  :after ivy
+  :ensure t
+  :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
+  :custom
+  (ivy-virtual-abbreviate 'full
+   ivy-rich-switch-buffer-align-virtual-buffer t
+   ivy-rich-path-style 'abbrev)
+  :config
+  (ivy-set-display-transformer 'ivy-switch-buffer
+                               'ivy-rich-switch-buffer-transformer))
+#+end_src
+
 * ORG MODE
 ** Enabling Table of Contents
 #+begin_src emacs-lisp
@@ -321,9 +361,8 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 
 
 #+begin_src emacs-lisp
-  (require 'org-tempo
+  (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  )
 #+end_src
 
 * SUDO EDIT

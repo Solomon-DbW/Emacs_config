@@ -84,6 +84,8 @@
 	    "." '(find-file :wk "Find file")
 	    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
 	    "g c c" '(comment-line :wk "Comment lines")
+	    
+	    "f r" '(counsel-recentf :wk "Find recent files")
 
             "pc" '(clipboard-yank :wk "Paste Clipboard")
 
@@ -208,6 +210,39 @@
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
 
+(elpaca counsel
+(use-package counsel
+  :after ivy
+  :config (counsel-mode)))
+
+(use-package ivy
+  :bind
+  ;; ivy-resume resumes the last Ivy-based completion.
+  (("C-c C-r" . ivy-resume)
+   ("C-x B" . ivy-switch-buffer-other-window))
+  :custom
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq enable-recursive-minibuffers t)
+  :config
+  (ivy-mode))
+
+(use-package all-the-icons-ivy-rich
+  :ensure t
+  :init (all-the-icons-ivy-rich-mode 1))
+
+(use-package ivy-rich
+  :after ivy
+  :ensure t
+  :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
+  :custom
+  (ivy-virtual-abbreviate 'full
+   ivy-rich-switch-buffer-align-virtual-buffer t
+   ivy-rich-path-style 'abbrev)
+  :config
+  (ivy-set-display-transformer 'ivy-switch-buffer
+                               'ivy-rich-switch-buffer-transformer))
+
 (elpaca toc-org
   (use-package toc-org
     :commands toc-org-enable
@@ -220,9 +255,8 @@
 
 (electric-indent-mode -1)
 
-(require 'org-tempo
+(require 'org-tempo)
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-)
 
 (elpaca sudo-edit
 (use-package sudo-edit
