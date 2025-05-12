@@ -1,0 +1,1 @@
+/home/solomon/.config/emacs/elpaca/repos/spaceline/spaceline-config.el

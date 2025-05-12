@@ -82,9 +82,10 @@
   (solomon/leader-keys
 	    "." '(find-file :wk "Find file")
 	    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
-	    "g c c" '(comment-line :wk "Comment lines"))
+	    "g c c" '(comment-line :wk "Comment lines")
 
-	(solomon/leader-keys
+            "pc" '(clipboard-yank :wk "Paste Clipboard")
+
 	    "b" '(:ignore t :wk "buffer")
 	    "b b" '(switch-to-buffer :wk "Switch buffer")
 	    "b i" '(ibuffer :wk "Ibuffer")
@@ -116,41 +117,49 @@
   (load-file user-init-file)
   (load-file user-init-file))
 
-;; (elpaca nerd-icons)
-  ;; (use-package nerd-icons
-  ;;   :ensure t)
+(set-face-attribute 'default nil
+                    :font "JetBrains Mono"
+                    :height 110
+                    :weight 'medium)
+
+(set-face-attribute 'variable-pitch nil
+                    :font "JetBrains Mono"
+                    :height 120
+                    :weight 'medium)
+
+(set-face-attribute 'fixed-pitch nil
+                    :font "JetBrains Mono"
+                    :height 110
+                    :weight 'medium)
+
+(set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+(set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
+
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+
+(setq-default line-spacing 0.12)
+
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
 
-;; (use-package all-the-icons-dired
-  ;; :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
-      ;; run M-x nerd-icons-install-fonts to install nerd fonts
-        (set-face-attribute 'default nil
-                            :font "JetBrains Mono"
-                            :height 110
-                            :weight 'medium)
-
-        (set-face-attribute 'variable-pitch nil
-                            :font "JetBrains Mono"
-                            :height 120
-                            :weight 'medium)
-
-        (set-face-attribute 'fixed-pitch nil
-                            :font "JetBrains Mono"
-                            :height 110
-                            :weight 'medium)
-
-        (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
-        (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
-
-        (add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
-
-        (setq-default line-spacing 0.12)
+(global-set-key (kbd "C-=") 'text-scale-increase) ;; Ctrl +/-
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 
 (use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
+        :ensure t
+        :init (doom-modeline-mode 1))
+    ;; (use-package powerline
+    ;;   :ensure t
+    ;;   :config
+    ;;   (powerline-default-theme))
+;;  (use-package spaceline
+  ;;   :ensure t
+  ;;   :config
+  ;;   (require 'spaceline-config)
+  ;;   (spaceline-emacs-theme))
 
 (use-package dashboard
   :ensure t 
