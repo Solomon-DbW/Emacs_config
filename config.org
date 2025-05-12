@@ -35,6 +35,8 @@
   - [[#app-launcher][APP LAUNCHER]]
 - [[#projectile][PROJECTILE]]
 - [[#language-support][LANGUAGE SUPPORT]]
+- [[#diminish][DIMINISH]]
+- [[#flycheck][FLYCHECK]]
 
 * IMPORTANT PROGRAMS TO LOAD FIRST
 ** Elpaca Package Manager
@@ -624,4 +626,27 @@ Emacs has built-in programming language modes for Lisp, Scheme, DSSSL, Ada, ASM,
 
   (elpaca lua-mode
   (use-package lua-mode))
+#+end_src
+
+* DIMINISH
+This package implements hiding or abbreviation of the modeline displays (lighters) of minor-modes.  With this package installed, you can add ‘:diminish’ to any use-package block to hide that particular mode in the modeline.
+#+begin_src emacs-lisp
+(elpaca diminish
+(use-package diminish)
+)
+#+end_src
+
+* FLYCHECK
+Install luacheck from your Linux distro’s repositories for flycheck to work correctly with lua files.  Install python-pylint for flycheck to work with python files.  Haskell works with flycheck as long as haskell-ghc or haskell-stack-ghc is installed.
+#+begin_src emacs-lisp
+  (elpaca flycheck
+  (use-package flycheck
+  :ensure t
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode))
+    ;; :ensure t
+    ;; :defer t
+    ;; :diminish
+    ;; :init (global-flycheck-mode))
+  )
 #+end_src

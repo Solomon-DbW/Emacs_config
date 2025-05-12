@@ -474,3 +474,18 @@ one, an error is signaled."
 
   (elpaca lua-mode
   (use-package lua-mode))
+
+(elpaca diminish
+(use-package diminish)
+)
+
+(elpaca flycheck
+(use-package flycheck
+:ensure t
+:config
+(add-hook 'after-init-hook #'global-flycheck-mode))
+  ;; :ensure t
+  ;; :defer t
+  ;; :diminish
+  ;; :init (global-flycheck-mode))
+)
