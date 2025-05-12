@@ -14,6 +14,7 @@
   - [[#nerd-icons][NERD ICONS]]
   - [[#zooming-inout][ZOOMING IN/OUT]]
 - [[#gui-adjustments][GUI ADJUSTMENTS]]
+  - [[#modeline][Modeline]]
   - [[#dashboard][Dashboard]]
   - [[#dark-theme][Dark Theme]]
   - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars, and Scrollbars]]
@@ -23,6 +24,7 @@
   - [[#enabling-org-bullets][Enabling Org Bullets]]
   - [[#disable-electric-org-mode-auto-indentation][Disable Electric (Org Mode) Auto-Indentation]]
   - [[#source-code-block-tag-expansion][Source Code Block Tag Expansion]]
+- [[#sudo-edit][SUDO EDIT]]
 - [[#which-key][WHICH-KEY]]
 
 * IMPORTANT PROGRAMS TO LOAD FIRST
@@ -73,32 +75,33 @@
 
 ** Load Evil Mode (Vim)
 #+begin_src emacs-lisp
-(elpaca elpaca-use-package
-  (elpaca-use-package-mode))
+  (elpaca elpaca-use-package
+    (elpaca-use-package-mode))
 
-(elpaca evil
-  (use-package evil
-    :init
-    (setq evil-want-integration t
-          evil-want-keybinding nil
-          evil-vsplit-window-right t
-          evil-split-window-below t)
+
+  (elpaca evil
+    (use-package evil
+      :init
+      (setq evil-want-integration t
+            evil-want-keybinding nil
+            evil-vsplit-window-right t
+            evil-split-window-below t)
+      :config
+      (evil-mode 1)))
+
+  (elpaca evil-collection
+    (use-package evil-collection
+      :after evil
+      :config
+      (setq evil-collection-mode-list '(dashboard dired ibuffer))
+      (evil-collection-init)))
+
+  (elpaca evil-tutor
+    (use-package evil-tutor))
+
+  (use-package emacs :ensure nil
     :config
-    (evil-mode 1)))
-
-(elpaca evil-collection
-  (use-package evil-collection
-    :after evil
-    :config
-    (setq evil-collection-mode-list '(dashboard dired ibuffer))
-    (evil-collection-init)))
-
-(elpaca evil-tutor
-  (use-package evil-tutor))
-
-(use-package emacs :ensure nil
-  :config
-  (setq ring-bell-function #'ignore))
+    (setq ring-bell-function #'ignore))
 #+end_src
 
 ** General Keybindings
@@ -202,6 +205,7 @@ A custom Emacs function to reload init.el
 
 * GUI ADJUSTMENTS
 
+** Modeline
 #+begin_src emacs-lisp
         (use-package doom-modeline
           :ensure t
@@ -312,13 +316,25 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 | <l                     | '#+BEGIN_EXPORT latex' … '#+END_EXPORT' |
 | <q                     | '#+BEGIN_QUOTE' … '#+END_QUOTE'         |
 | <s                     | '#+BEGIN_SRC' … '#+END_SRC'             |
+| <el                    | '#+BEGIN_SRC emacs-lisp' … '#+END_SRC'  |
 | <v                     | '#+BEGIN_VERSE' … '#+END_VERSE'         |
 
 
 #+begin_src emacs-lisp
-(require 'org-tempo)
+  (require 'org-tempo
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  )
 #+end_src
 
+* SUDO EDIT
+#+begin_src emacs-lisp
+(elpaca sudo-edit
+(use-package sudo-edit
+  :config
+    (solomon/leader-keys
+      "fu" '(sudo-edit-find-file :wk "Sudo find file")
+      "fU" '(sudo-edit :wk "Sudo edit file"))))
+#+end_src
 
 * WHICH-KEY
 #+begin_src emacs-lisp
@@ -338,3 +354,5 @@ Org-tempo is not a separate package but a module within org that can be enabled.
         which-key-allow-imprecise-window-fit t
         which-key-separator " → "))
 #+end_src
+
+

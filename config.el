@@ -43,6 +43,7 @@
 (elpaca elpaca-use-package
   (elpaca-use-package-mode))
 
+
 (elpaca evil
   (use-package evil
     :init
@@ -219,7 +220,16 @@
 
 (electric-indent-mode -1)
 
-(require 'org-tempo)
+(require 'org-tempo
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+)
+
+(elpaca sudo-edit
+(use-package sudo-edit
+  :config
+    (solomon/leader-keys
+      "fu" '(sudo-edit-find-file :wk "Sudo find file")
+      "fU" '(sudo-edit :wk "Sudo edit file"))))
 
 (use-package which-key
   :init (which-key-mode 1)
