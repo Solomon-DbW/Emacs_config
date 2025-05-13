@@ -92,6 +92,9 @@
 	    "f r" '(counsel-recentf :wk "Find recent files")
             "pc" '(clipboard-yank :wk "Paste Clipboard")
 
+	   "a" '(:ignore t :wk "App")
+	   "a l a" '(counsel-linux-app :wk "App launcher")
+
 	    "b" '(:ignore t :wk "buffer")
 	    "b b" '(switch-to-buffer :wk "Switch buffer")
 	    "b i" '(ibuffer :wk "Ibuffer")
@@ -99,6 +102,11 @@
 	    "b n" '(next-buffer :wk "Next buffer")
 	    "b p" '(previous-buffer :wk "Previous buffer")
 	    "b r" '(revert-buffer :wk "Reload buffer")
+
+	    "d" '(:ignore t :wk "Dired")
+	    "d d" '(dired :wk "Open dired")
+	    "d j" '(dired-jump :wk "Dired jump to current")
+	    "d p" '(peep-dired :wk "Peep-dired")
 
 	    "e" '(:ignore t :wk "evaluate/eshell")
 	    "e b" '(eval-buffer :wk "Eval buffer")
@@ -109,14 +117,15 @@
 	    "e r" '(eval-region :wk "Eval region")
 	   "e s" '(eshell :which-key "Eshell") 
 
-	   "a" '(:ignore t :wk "App")
-	   "a l a" '(counsel-linux-app :wk "App launcher")
 
 	    "h" '(:ignore t :wk "Help")
 	    "h f" '(describe-function :wk "Describe function")
 	    "h v" '(describe-variable :wk "Describe variable")
 	    ;; "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :wk "Reload emacs config")
 	    "h r r" '(reload-init-file :wk "Reload emacs config")
+	    
+	    "l" '(:ignore t :wk "Load")
+	    "l t" '(load-theme :wk "Load theme")
 
 		"m" '(:ignore t :wk "Org")
 		"m a" '(org-agenda :wk "Org agenda")
@@ -131,6 +140,9 @@
 
 		"m d" '(:ignore t :wk "Date/deadline")
 		"m d t" '(org-time-stamp :wk "Org time stamp")
+
+	"n" '(:ignore t :wk "NeoTree")
+	    "n t" '(neotree-toggle :wk "Open directory in neotree")
 
 	    "t" '(:ignore t :wk "Toggle")
 	    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
@@ -479,17 +491,83 @@ one, an error is signaled."
 (use-package diminish)
 )
 
-(elpaca flycheck
-   (use-package flycheck
- :ensure t
- :init (global-flycheck-mode)
- :config
-(setq flycheck-check-syntax-automatically '(save mode-enabled idle-change))
-(setq flycheck-idle-change-delay 0.5)
-(setq flycheck-python-pylint-executable "pylint"))
-   )
+(elpaca flycheck ;; IF IT DOESN@T WORK RUN META-X FLYCHECK_MODE
+(use-package flycheck
+     :ensure t
+     ;; :defer t
+     :init (global-flycheck-mode)
+     :config
+    (setq flycheck-check-syntax-automatically '(save mode-enabled idle-change))
+    (setq flycheck-idle-change-delay 0.5)
+    (setq flycheck-python-pylint-executable "pylint"))
+       )
 
 (require 'python)
   (setq python-shell-interpreter "python3")  ;; or "python" depending on your system
 (setq python-shell-interpreter-args "")
 (setq flycheck-python-pylint-executable "pylint")  ;; Make sure it points to your pylint
+
+(elpaca company
+  (use-package company
+    :defer 2
+    :diminish
+    :custom
+    (company-begin-commands '(self-insert-command))
+    (company-idle-delay .1)
+    (company-minimum-prefix-length 2)
+    (company-show-numbers t)
+    (company-tooltip-align-annotations 't)
+    (global-company-mode t))
+  )
+  
+(elpaca company-box
+(use-package company-box
+  :after company
+  :diminish
+  :hook (company-mode . company-box-mode))
+)
+
+(add-to-list 'default-frame-alist '(alpha-background . 90)) ; For all new frames henceforth
+
+(elpaca dired-open
+  (use-package dired-open
+    :config
+    (setq dired-open-extensions '(("gif" . "sxiv")
+                                  ("jpg" . "sxiv")
+                                  ("png" . "sxiv")
+                                  ("mkv" . "vlc")
+                                  ("mp4" . "vlc"))))
+  )
+
+(elpaca peep-dired
+  (use-package peep-dired
+    :after dired
+    :hook (evil-normalize-keymaps . peep-dired-hook)
+    :config
+      (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
+      (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file) ; use dired-find-file instead if not using dired-open package
+      (evil-define-key 'normal peep-dired-mode-map (kbd "j") 'peep-dired-next-file)
+      (evil-define-key 'normal peep-dired-mode-map (kbd "k") 'peep-dired-prev-file)
+  ))
+
+(elpaca neotree
+(use-package neotree
+  :config
+  (setq neo-smart-open t
+        neo-show-hidden-files t
+        neo-window-width 55
+        neo-window-fixed-size nil
+        inhibit-compacting-font-caches t
+        projectile-switch-project-action 'neotree-projectile-action) 
+        ;; truncate long file names in neotree
+        (add-hook 'neo-after-create-hook
+           #'(lambda (_)
+               (with-current-buffer (get-buffer neo-buffer-name)
+                 (setq truncate-lines t)
+                 (setq word-wrap nil)
+                 (make-local-variable 'auto-hscroll-mode)
+                 (setq auto-hscroll-mode nil)))))
+
+;; show hidden files
+
+)
