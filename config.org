@@ -639,14 +639,20 @@ This package implements hiding or abbreviation of the modeline displays (lighter
 * FLYCHECK
 Install luacheck from your Linux distro’s repositories for flycheck to work correctly with lua files.  Install python-pylint for flycheck to work with python files.  Haskell works with flycheck as long as haskell-ghc or haskell-stack-ghc is installed.
 #+begin_src emacs-lisp
-  (elpaca flycheck
-  (use-package flycheck
-  :ensure t
-  :config
-  (add-hook 'after-init-hook #'global-flycheck-mode))
-    ;; :ensure t
-    ;; :defer t
-    ;; :diminish
-    ;; :init (global-flycheck-mode))
-  )
+(elpaca flycheck ;; IF IT DOESN@T WORK RUN META-X FLYCHECK_MODE
+(use-package flycheck
+     :ensure t
+     :init (global-flycheck-mode)
+     :config
+    (setq flycheck-check-syntax-automatically '(save mode-enabled idle-change))
+    (setq flycheck-idle-change-delay 0.5)
+    (setq flycheck-python-pylint-executable "pylint"))
+       )
+#+end_src
+
+#+begin_src emacs-lisp
+    (require 'python)
+  (setq python-shell-interpreter "python3")  ;; or "python" depending on your system
+(setq python-shell-interpreter-args "")
+(setq flycheck-python-pylint-executable "pylint")  ;; Make sure it points to your pylint
 #+end_src

@@ -480,12 +480,16 @@ one, an error is signaled."
 )
 
 (elpaca flycheck
-(use-package flycheck
-:ensure t
-:config
-(add-hook 'after-init-hook #'global-flycheck-mode))
-  ;; :ensure t
-  ;; :defer t
-  ;; :diminish
-  ;; :init (global-flycheck-mode))
-)
+   (use-package flycheck
+ :ensure t
+ :init (global-flycheck-mode)
+ :config
+(setq flycheck-check-syntax-automatically '(save mode-enabled idle-change))
+(setq flycheck-idle-change-delay 0.5)
+(setq flycheck-python-pylint-executable "pylint"))
+   )
+
+(require 'python)
+  (setq python-shell-interpreter "python3")  ;; or "python" depending on your system
+(setq python-shell-interpreter-args "")
+(setq flycheck-python-pylint-executable "pylint")  ;; Make sure it points to your pylint
