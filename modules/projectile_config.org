@@ -1,0 +1,11 @@
+
+* PROJECTILE
+
+#+begin_src emacs-lisp
+(elpaca projectile
+(use-package projectile
+  :config
+  (projectile-mode 1))
+)
+#+end_src
+

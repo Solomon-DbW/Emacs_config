@@ -1,0 +1,30 @@
+(set-face-attribute 'default nil
+                    :font "JetBrains Mono"
+                    :height 110
+                    :weight 'medium)
+
+(set-face-attribute 'variable-pitch nil
+                    :font "JetBrains Mono"
+                    :height 120
+                    :weight 'medium)
+
+(set-face-attribute 'fixed-pitch nil
+                    :font "JetBrains Mono"
+                    :height 110
+                    :weight 'medium)
+
+(set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+(set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
+
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+
+(setq-default line-spacing 0.12)
+
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p))
+
+(global-set-key (kbd "C-=") 'text-scale-increase) ;; Ctrl +/-
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)

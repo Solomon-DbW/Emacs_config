@@ -1,0 +1,27 @@
+(elpaca elpaca-use-package
+  (elpaca-use-package-mode))
+
+
+(elpaca evil
+  (use-package evil
+    :init
+    (setq evil-want-integration t
+          evil-want-keybinding nil
+          evil-vsplit-window-right t
+          evil-split-window-below t)
+    :config
+    (evil-mode 1)))
+
+(elpaca evil-collection
+  (use-package evil-collection
+    :after evil
+    :config
+    (setq evil-collection-mode-list '(dashboard dired ibuffer))
+    (evil-collection-init)))
+
+(elpaca evil-tutor
+  (use-package evil-tutor))
+
+(use-package emacs :ensure nil
+  :config
+  (setq ring-bell-function #'ignore))
