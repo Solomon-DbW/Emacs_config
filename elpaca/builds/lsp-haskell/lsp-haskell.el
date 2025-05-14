@@ -1,0 +1,1 @@
+/home/solomon/.config/emacs/elpaca/repos/lsp-haskell/lsp-haskell.el

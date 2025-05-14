@@ -20,7 +20,6 @@
 * LOADING MODULES
 #+begin_src emacs-lisp
 
-  ;; Load each module
   (load-config-module "elpaca-setup")
   (load-config-module "buffer-move")
   (load-config-module "evil-config")
@@ -38,6 +37,5 @@
   (load-config-module "lang_support")
   (load-config-module "navigation_config")
 
-  ;; Add more modules as needed
 #+end_src
 

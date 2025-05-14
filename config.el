@@ -5,7 +5,6 @@
   (org-babel-load-file 
    (expand-file-name (format "modules/%s.org" module) user-emacs-directory)))
 
-;; Load each module
 (load-config-module "elpaca-setup")
 (load-config-module "buffer-move")
 (load-config-module "evil-config")
@@ -22,5 +21,3 @@
 (load-config-module "projectile_config")
 (load-config-module "lang_support")
 (load-config-module "navigation_config")
-
-;; Add more modules as needed

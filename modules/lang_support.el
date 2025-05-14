@@ -11,12 +11,17 @@
 (use-package flycheck
      :ensure t
      ;; :defer t
-     :init (global-flycheck-mode)
      :config
+     (global-flycheck-mode 1)
     (setq flycheck-check-syntax-automatically '(save mode-enabled idle-change))
     (setq flycheck-idle-change-delay 0.5)
     (setq flycheck-python-pylint-executable "pylint"))
        )
+(add-hook 'buffer-list-update-hook
+          (lambda ()
+            (when (and (buffer-file-name)
+                       (not (bound-and-true-p flycheck-mode)))
+              (flycheck-mode 1))))
 
 (require 'python)
   (setq python-shell-interpreter "python3")  ;; or "python" depending on your system

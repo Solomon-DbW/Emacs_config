@@ -18,12 +18,17 @@ Install luacheck from your Linux distro’s repositories for flycheck to work co
   (use-package flycheck
        :ensure t
        ;; :defer t
-       :init (global-flycheck-mode)
        :config
+       (global-flycheck-mode 1)
       (setq flycheck-check-syntax-automatically '(save mode-enabled idle-change))
       (setq flycheck-idle-change-delay 0.5)
       (setq flycheck-python-pylint-executable "pylint"))
          )
+  (add-hook 'buffer-list-update-hook
+            (lambda ()
+              (when (and (buffer-file-name)
+                         (not (bound-and-true-p flycheck-mode)))
+                (flycheck-mode 1))))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -57,4 +62,3 @@ A text completion framework for Emacs. Use M-n and M-p to select, <return> to co
   :hook (company-mode . company-box-mode))
 )
 #+end_src
-

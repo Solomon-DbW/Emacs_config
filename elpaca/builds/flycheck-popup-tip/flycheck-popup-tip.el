@@ -1,0 +1,1 @@
+/home/solomon/.config/emacs/elpaca/repos/flycheck-popup-tip/flycheck-popup-tip.el

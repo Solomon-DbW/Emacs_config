@@ -1,0 +1,1 @@
+/home/solomon/.config/emacs/elpaca/repos/lsp-mode/clients/lsp-astro.el

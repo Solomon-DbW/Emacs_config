@@ -1,0 +1,1 @@
+/home/solomon/.config/emacs/elpaca/repos/json-mode/json-mode.el

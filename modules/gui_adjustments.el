@@ -1,15 +1,6 @@
 (use-package doom-modeline
-        :ensure t
-        :init (doom-modeline-mode 1))
-    ;; (use-package powerline
-    ;;   :ensure t
-    ;;   :config
-    ;;   (powerline-default-theme))
-;;  (use-package spaceline
-  ;;   :ensure t
-  ;;   :config
-  ;;   (require 'spaceline-config)
-  ;;   (spaceline-emacs-theme))
+  :ensure t
+  :init (doom-modeline-mode 1))
 
 (use-package dashboard
   :ensure t 
